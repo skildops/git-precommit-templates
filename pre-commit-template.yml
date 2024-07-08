@@ -1,0 +1,63 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: check-yaml
+        args:
+          - "--allow-multiple-documents"
+      - id: check-json
+      - id: pretty-format-json
+        args: [--autofix, --no-sort-keys, --indent 2]
+
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  # ======= START: pre-commit for terraform =======
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.92.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      # tflint rules: https://github.com/terraform-linters/tflint?tab=readme-ov-file
+      - id: terraform_tflint
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl --fix
+
+  # https://www.checkov.io/4.Integrations/pre-commit.html
+  # https://github.com/bridgecrewio/checkov
+  - repo: https://github.com/bridgecrewio/checkov.git
+    rev: "3.2.175"
+    hooks:
+      - id: checkov
+        args: ["--quiet", "--compact", "--framework", "terraform", "--download-external-modules", "false"]
+
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.18.0
+    hooks:
+      - id: terraform-docs-go
+        args: ["."]
+  # ======= END: pre-commit for terraform =======
+
+  # ======= START: pre-commit for python =======
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.5.1
+  hooks:
+    # Run the linter.
+    - id: ruff
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
+  # ======= END: pre-commit for python =======
